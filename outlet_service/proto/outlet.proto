@@ -1,0 +1,32 @@
+
+syntax = "proto3";
+
+package outlet;
+
+service OutletService {
+  rpc CreateOrder(Order) returns (Response) {}
+  rpc GetOrders(GetRequest) returns (Response) {}
+}
+
+message Order {
+  string id = 1;
+  string description = 2;
+  int32 sum_price = 3;
+  string user_id = 4;
+  string courier_id = 5;
+  repeated Commodity commoditys = 6;
+}
+
+message Commodity {
+  string id = 1;
+  string description = 2;
+  int32 price = 3;
+  int32 quantity = 4;
+}
+
+message GetRequest {}
+
+message Response {
+  bool created = 1;
+  repeated Order orders = 2;
+}
