@@ -63,7 +63,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 
-	pb.RegisterShippingServiceServer(s, &service{repo})
+	pb.RegisterOutletServiceServer(s, &service{repo})
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)

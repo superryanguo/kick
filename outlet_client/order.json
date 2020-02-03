@@ -1,0 +1,10 @@
+{
+  "id": "1",
+  "description": "This is a test order by ryanguo",
+  "sum_price": 666,
+  "user_id": "13",
+  "courier_id": "9",
+  "commoditys": [
+    { "id": "001", "description": "fruit", "price": 10, "quantity": 2 }
+  ]
+}
