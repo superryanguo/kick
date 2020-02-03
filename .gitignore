@@ -1,4 +1,6 @@
 # Binaries for programs and plugins
+outlet_client
+outlet_server
 *.exe
 *.exe~
 *.dll

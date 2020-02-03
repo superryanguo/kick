@@ -15,7 +15,7 @@ const (
 )
 
 type Repoiter interface {
-	Create(*pb.Order) (*pb.Order, error)
+	Create(*pb.Order) ([]*pb.Order, error)
 	GetAll() []*pb.Order
 }
 
@@ -23,14 +23,14 @@ type Repo struct {
 	orders []*pb.Order
 }
 
-func (repo *Repo) Create(order *pb.Order) (*pb.Order, error) {
-	updated := append(Repo.orders, order)
+func (repo *Repo) Create(order *pb.Order) ([]*pb.Order, error) {
+	updated := append(repo.orders, order)
 	repo.orders = updated
-	return orders, nil
+	return updated, nil
 }
 
 func (repo *Repo) GetAll() []*pb.Order {
-	return Repo.orders
+	return repo.orders
 }
 
 type service struct {
