@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
+	micro "github.com/micro/go-micro"
 	pb "github.com/superryanguo/kick/outlet_service/proto"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -27,12 +27,17 @@ func parseFile(file string) (*pb.Order, error) {
 }
 
 func main() {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
-	}
-	defer conn.Close()
-	client := pb.NewOutletServiceClient(conn)
+	//conn, err := grpc.Dial(address, grpc.WithInsecure())
+	//if err != nil {
+	//log.Fatalf("Did not connect: %v", err)
+	//}
+	//defer conn.Close()
+	//client := pb.NewOutletServiceClient(conn)
+
+	service := micro.NewService(micro.Name("outlet"))
+	service.Init()
+
+	client := pb.NewShippingServiceClient("outlet", service.Client())
 
 	file := defaultFilename
 	if len(os.Args) > 1 {

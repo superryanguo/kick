@@ -2,12 +2,10 @@ package main
 
 import (
 	"log"
-	"net"
 
+	micro "github.com/micro/go-micro"
 	pb "github.com/superryanguo/kick/outlet_service/proto"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -57,17 +55,21 @@ func main() {
 	repo := &Repo{}
 
 	// Set-up our gRPC server.
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
+	//lis, err := net.Listen("tcp", port)
+	//if err != nil {
+	//log.Fatalf("failed to listen: %v", err)
+	//}
+	//s := grpc.NewServer()
 
-	pb.RegisterOutletServiceServer(s, &service{repo})
+	srv := micro.NewService(
+		micro.Name("outlet"),
+	)
 
-	// Register reflection service on gRPC server.
-	reflection.Register(s)
-	if err := s.Serve(lis); err != nil {
+	srv.Init()
+
+	pb.RegisterOutletServiceServer(srv.Server(), &service{repo})
+
+	if err := srv.Run(); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
