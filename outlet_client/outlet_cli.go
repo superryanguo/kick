@@ -37,7 +37,7 @@ func main() {
 	service := micro.NewService(micro.Name("outlet"))
 	service.Init()
 
-	client := pb.NewShippingServiceClient("outlet", service.Client())
+	client := pb.NewOutletServiceClient("outlet", service.Client())
 
 	file := defaultFilename
 	if len(os.Args) > 1 {

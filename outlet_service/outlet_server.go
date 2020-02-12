@@ -35,19 +35,22 @@ type service struct {
 	repo Repoiter
 }
 
-func (s *service) CreateOrder(ctx context.Context, req *pb.Order) (*pb.Response, error) {
+func (s *service) CreateOrder(ctx context.Context, req *pb.Order, res *pb.Response) error {
 
 	orders, err := s.repo.Create(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &pb.Response{Created: true, Orders: orders}, nil
+	res.Created = true
+	res.Orders = orders
+	return nil
 }
 
-func (s *service) GetOrders(ctx context.Context, req *pb.GetRequest) (*pb.Response, error) {
+func (s *service) GetOrders(ctx context.Context, req *pb.GetRequest, res *pb.Response) error {
 	orders := s.repo.GetAll()
-	return &pb.Response{Orders: orders}, nil
+	res.Orders = orders
+	return nil
 }
 
 func main() {
@@ -67,7 +70,7 @@ func main() {
 
 	srv.Init()
 
-	pb.RegisterOutletServiceServer(srv.Server(), &service{repo})
+	pb.RegisterOutletServiceHandler(srv.Server(), &service{repo})
 
 	if err := srv.Run(); err != nil {
 		log.Fatalf("failed to serve: %v", err)
