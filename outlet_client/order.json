@@ -5,6 +5,6 @@
   "user_id": "13",
   "courier_id": "9",
   "commoditys": [
-    { "id": "001", "description": "fruit", "price": 10, "quantity": 2 }
+    { "id": "001", "description": "fruit", "price": 10, "quantity": 2, "weight":50 }
   ]
 }

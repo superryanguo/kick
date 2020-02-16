@@ -4,6 +4,7 @@ import (
 	"log"
 
 	micro "github.com/micro/go-micro"
+	cor "github.com/superryanguo/kick/courier_service/proto"
 	pb "github.com/superryanguo/kick/outlet_service/proto"
 	"golang.org/x/net/context"
 )
@@ -32,10 +33,42 @@ func (repo *Repo) GetAll() []*pb.Order {
 }
 
 type service struct {
-	repo Repoer
+	repo          Repoer
+	courierClient cor.CourierServiceClient
 }
 
+func GetQuantity(c []*pb.Commodity) int32 {
+	var q int32
+	for _, d := range c {
+		q += d.Quantity
+	}
+	return q
+}
+
+func GetWeight(c []*pb.Commodity) int32 {
+	var w int32
+	for _, d := range c {
+		w += (d.Weight * d.Quantity)
+	}
+	return w
+}
 func (s *service) CreateOrder(ctx context.Context, req *pb.Order, res *pb.Response) error {
+
+	cr, err := s.courierClient.Dispatch(context.Background(), &cor.Request{
+		Quantity: GetQuantity(req.Commoditys),
+		Weight:   GetWeight(req.Commoditys),
+		OrderId:  req.Id,
+	})
+	if err != nil {
+		return err
+	}
+	//update the data into order
+	if cr.Dispatched {
+		req.CourierId = cr.Courier.CourierId
+		log.Printf("Found courier: %s[%s]\n", cr.Courier.Name, req.CourierId)
+	} else {
+		log.Println("The courier is not Available!")
+	}
 
 	orders, err := s.repo.Create(req)
 	if err != nil {
@@ -44,6 +77,7 @@ func (s *service) CreateOrder(ctx context.Context, req *pb.Order, res *pb.Respon
 
 	res.Created = true
 	res.Orders = orders
+	log.Printf("The order %s[%s] is Created!\n", req.Id, req.UserId)
 	return nil
 }
 
@@ -68,9 +102,10 @@ func main() {
 		micro.Name("outlet"),
 	)
 
+	c := cor.NewCourierServiceClient("courier", srv.Client())
 	srv.Init()
 
-	pb.RegisterOutletServiceHandler(srv.Server(), &service{repo})
+	pb.RegisterOutletServiceHandler(srv.Server(), &service{repo, c})
 
 	if err := srv.Run(); err != nil {
 		log.Fatalf("failed to serve: %v", err)

@@ -26,6 +26,7 @@ func (repo *Repo) Dispatch(req *pb.Request) (*pb.Courier, error) {
 			cr.Capacity -= req.Quantity
 			cr.MaxWeight -= (req.Quantity * req.Weight)
 			cr.OrderId = append(cr.OrderId, req.OrderId)
+			log.Printf("Assign %s[%s] for %s\n", cr.Name, cr.CourierId, cr.OrderId)
 			return cr, nil
 		}
 	}
