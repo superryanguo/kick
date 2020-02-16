@@ -12,7 +12,7 @@ const (
 	port = ":7000"
 )
 
-type Repoiter interface {
+type Repoer interface {
 	Create(*pb.Order) ([]*pb.Order, error)
 	GetAll() []*pb.Order
 }
@@ -32,7 +32,7 @@ func (repo *Repo) GetAll() []*pb.Order {
 }
 
 type service struct {
-	repo Repoiter
+	repo Repoer
 }
 
 func (s *service) CreateOrder(ctx context.Context, req *pb.Order, res *pb.Response) error {

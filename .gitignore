@@ -1,6 +1,9 @@
 # Binaries for programs and plugins
 outlet_client/outlet_client
 outlet_service/outlet_service
+outlet_service/outlet_server
+courier_service/courier_service
+courier_service/courier_server
 *.exe
 *.exe~
 *.dll
