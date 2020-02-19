@@ -1,0 +1,39 @@
+version: '3.5'
+
+services:
+  outlet-cms:
+    restart: always
+    container_name: "outlet-cms"
+    build: ./outlet_service
+    ports:
+      - 50051
+    links:
+      - datastore
+    depends_on:
+      - datastore
+    networks:
+      - outlet-backend-net
+      - outlet-net
+    environment:
+      DB_HOST: "mongodb://datastore:27017"
+      MICRO_ADDRESS: ":50051"
+
+  datastore:
+    image: mongo:latest
+    container_name: "datastore"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    networks:
+      - outlet-net
+    ports:
+      - 27017
+    command: mongod --logpath=/dev/null
+
+networks:
+  outlet-net:
+    name: outlet-net
+  outlet-backend-net:
+    name: outlet-backend-net
