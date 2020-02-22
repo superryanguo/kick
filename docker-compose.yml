@@ -1,23 +1,6 @@
 version: '3.5'
 
 services:
-  outlet-cms:
-    restart: always
-    container_name: "outlet-cms"
-    build: ./outlet_service
-    ports:
-      - 50051
-    links:
-      - datastore
-    depends_on:
-      - datastore
-    networks:
-      - outlet-backend-net
-      - outlet-net
-    environment:
-      DB_HOST: "mongodb://datastore:27017"
-      MICRO_ADDRESS: ":50051"
-
   datastore:
     image: mongo:latest
     container_name: "datastore"
@@ -31,6 +14,46 @@ services:
     ports:
       - 27017
     command: mongod --logpath=/dev/null
+
+  database:
+    image: postgres
+    networks:
+      - outlet-net
+    ports:
+      - 5432
+
+  courier-server:
+    restart: always
+    container_name: "courier-server"
+    build: ./courier_service
+    networks:
+      - outlet-backend-net
+
+  outlet-server:
+    restart: always
+    container_name: "outlet-server"
+    build: ./outlet_service
+    ports:
+      - 50051
+    links:
+      - datastore
+    depends_on:
+      - datastore
+      - courier-server
+    networks:
+      - outlet-backend-net
+      - outlet-net
+    environment:
+      DB_HOST: "mongodb://datastore:27017"
+      MICRO_ADDRESS: ":50051"
+
+  outlet-client:
+    container_name: "outlet-client"
+    build: ./outlet_client
+    depends_on:
+      - outlet-server
+    networks:
+      - outlet-backend-net
 
 networks:
   outlet-net:
