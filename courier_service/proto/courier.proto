@@ -5,6 +5,7 @@ package courier;
 service CourierService {
   rpc Dispatch(Request) returns (Response) {}
   rpc ShowAll(ShowRequest) returns (Result) {}
+  rpc Create(Courier) returns (Response) {}
 }
 
 message Courier {

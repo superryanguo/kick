@@ -23,9 +23,9 @@ type Repo struct {
 }
 
 func (repo *Repo) Create(order *pb.Order) ([]*pb.Order, error) {
-	repo.collection().Insert(order)
+	err := repo.collection().Insert(order)
 	//TODO: error handling
-	return repo.GetAll(), nil
+	return repo.GetAll(), err
 }
 
 func (repo *Repo) GetAll() []*pb.Order {
