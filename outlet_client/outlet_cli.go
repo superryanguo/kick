@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	micro "github.com/micro/go-micro"
 	pb "github.com/superryanguo/kick/outlet_service/proto"
@@ -50,11 +51,16 @@ func main() {
 		log.Fatalf("Could not parse file: %v", err)
 	}
 
-	r, err := client.CreateOrder(context.Background(), order)
-	if err != nil {
-		log.Fatalf("Could not greet: %v", err)
+	for i := 0; i < 2; i++ {
+		r, err := client.CreateOrder(context.Background(), order)
+		if err != nil {
+			log.Printf("Could not greet: %v, retry after 3 seconds...", err)
+			time.Sleep(3 * time.Second)
+		} else {
+			log.Printf("Created: %t", r.Created)
+			break
+		}
 	}
-	log.Printf("Created: %t", r.Created)
 
 	getAll, err := client.GetOrders(context.Background(), &pb.GetRequest{})
 	if err != nil {
