@@ -54,6 +54,24 @@ services:
       DB_HOST: "mongodb://datastore:27017"
       MICRO_ADDRESS: ":50051"
 
+  user-server:
+    restart: always
+    container_name: "user-server"
+    build: ./user_service
+    links:
+      - database
+    depends_on:
+      - database
+    networks:
+      - outlet-backend-net
+      - outlet-net
+    environment:
+      DB_NAME: "postgres"
+      DB_HOST: "database"
+      DB_PORT: "5432"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+
   outlet-client:
     container_name: "outlet-client"
     build: ./outlet_client

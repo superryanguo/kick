@@ -4,6 +4,8 @@ outlet_service/outlet_service
 outlet_service/outlet_server
 courier_service/courier_service
 courier_service/courier_server
+user_service/user_service
+user_service/user_server
 data
 *.exe
 *.exe~
