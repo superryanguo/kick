@@ -80,6 +80,14 @@ services:
     networks:
       - outlet-backend-net
 
+  user-client:
+    container_name: "user-client"
+    build: ./user_client
+    depends_on:
+      - user-server
+    networks:
+      - outlet-backend-net
+
 networks:
   outlet-net:
     name: outlet-net
