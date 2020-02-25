@@ -24,6 +24,7 @@ type Repo struct {
 	session *mgo.Session
 }
 
+//TODO:this logic should move to the handler.go
 func (repo *Repo) Dispatch(req *pb.Request) (*pb.Courier, error) {
 	for _, cr := range repo.ShowAll() {
 		if cr.Available && req.Quantity <= cr.Capacity && (req.Quantity*req.Weight) <= cr.MaxWeight {

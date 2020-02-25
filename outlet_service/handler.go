@@ -54,6 +54,14 @@ func (s *service) CreateOrder(ctx context.Context, req *pb.Order, res *pb.Respon
 		log.Println("The courier is not Available!")
 	}
 
+	rt, err := s.courierClient.ShowAll(context.Background(), &cor.ShowRequest{})
+	if err != nil {
+		return err
+	} else {
+		for _, v := range rt.Couriers {
+			log.Printf("courier:%v\n", v)
+		}
+	}
 	orders, err := s.GetRepo().Create(req)
 	if err != nil {
 		return err
