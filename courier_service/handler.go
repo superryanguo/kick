@@ -34,6 +34,7 @@ func (s *service) ShowAll(ctx context.Context, req *pb.ShowRequest, res *pb.Resu
 	res.Couriers = s.GetRepo().ShowAll()
 	return nil
 }
+
 func (s *service) Create(ctx context.Context, c *pb.Courier, res *pb.Response) error {
 	defer s.GetRepo().Close()
 	res.Dispatched = false

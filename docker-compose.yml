@@ -26,8 +26,15 @@ services:
     restart: always
     container_name: "courier-server"
     build: ./courier_service
+    links:
+      - datastore
+    depends_on:
+      - datastore
     networks:
       - outlet-backend-net
+      - outlet-net
+    environment:
+      DB_HOST: "mongodb://datastore:27017"
 
   outlet-server:
     restart: always
