@@ -51,7 +51,7 @@ func main() {
 			company := c.String("company")
 			log.Printf("the parameter=%s,%s,%s,%s\n", name, email, password, company)
 			if len(name) == 0 || len(password) == 0 {
-				log.Println("can't use empty name and mail to create user")
+				log.Println("can't use empty name and password to create user")
 				os.Exit(0)
 			}
 
