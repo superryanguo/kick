@@ -12,6 +12,13 @@ import (
 	"golang.org/x/net/context"
 )
 
+const (
+	Name    string = "DefaultName"
+	Mail    string = "defaultMail"
+	Pwd     string = "default"
+	Company string = "CMP-default"
+)
+
 func main() {
 
 	cmd.Init()
@@ -47,9 +54,15 @@ func main() {
 			email := c.String("email")
 			password := c.String("password")
 			company := c.String("company")
-			if len(name) == 0 || len(email) == 0 || len(password) == 0 {
-				log.Println("can't use nil parameter to create user")
-				os.Exit(0)
+			log.Printf("the parameter=%s,%s,%s,%s\n", name, email, password, company)
+			if len(name) == 0 || len(password) == 0 {
+				log.Println("can't use empty name and mail to create user")
+				name = Name
+				email = Mail
+				password = Pwd
+				company = Company
+				//replace the nil with a default one
+				//os.Exit(0)
 			}
 
 			r, err := client.Create(context.TODO(), &pb.User{

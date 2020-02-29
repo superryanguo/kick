@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	pb "github.com/superryanguo/kick/user_service/proto"
 	"golang.org/x/net/context"
 )
@@ -17,7 +19,7 @@ func (srv *service) Get(ctx context.Context, req *pb.User, res *pb.Response) err
 		return err
 	}
 	res.Done = true
-	res.Users[0] = user
+	res.Users = append(res.Users, user)
 	return nil
 }
 
@@ -47,7 +49,8 @@ func (srv *service) Create(ctx context.Context, req *pb.User, res *pb.Response) 
 		return err
 	}
 	res.Done = true
-	res.Users[0] = req
+	log.Printf("Create the user%v\n", req)
+	res.Users = append(res.Users, req)
 	return nil
 }
 
