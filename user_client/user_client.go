@@ -7,25 +7,20 @@ import (
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
 	microclient "github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/config/cmd"
+	//"github.com/micro/go-micro/config/cmd"
 	pb "github.com/superryanguo/kick/user_service/proto"
 	"golang.org/x/net/context"
 )
 
-const (
-	Name    string = "DefaultName"
-	Mail    string = "defaultMail"
-	Pwd     string = "default"
-	Company string = "CMP-default"
-)
-
 func main() {
 
-	cmd.Init()
+	//cmd.Init()//TODO: interesting problem with nil para
 
 	client := pb.NewUserServiceClient("user", microclient.DefaultClient)
 
 	service := micro.NewService(
+		micro.Name("user-client"),
+		micro.Version("latest"),
 		micro.Flags(
 			cli.StringFlag{
 				Name:  "name",
@@ -57,12 +52,7 @@ func main() {
 			log.Printf("the parameter=%s,%s,%s,%s\n", name, email, password, company)
 			if len(name) == 0 || len(password) == 0 {
 				log.Println("can't use empty name and mail to create user")
-				name = Name
-				email = Mail
-				password = Pwd
-				company = Company
-				//replace the nil with a default one
-				//os.Exit(0)
+				os.Exit(0)
 			}
 
 			r, err := client.Create(context.TODO(), &pb.User{
@@ -74,7 +64,7 @@ func main() {
 			if err != nil {
 				log.Fatalf("Could not create: %v", err)
 			}
-			log.Printf("Created: %t", r.Users[0].Id)
+			log.Printf("Created: %v\n", r.Users[0].Id)
 
 			getAll, err := client.GetAll(context.Background(), &pb.Request{})
 			if err != nil {
