@@ -7,7 +7,7 @@ import (
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
 	microclient "github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/cmd"
+	"github.com/micro/go-micro/config/cmd"
 	pb "github.com/superryanguo/kick/user_service/proto"
 	"golang.org/x/net/context"
 )
@@ -47,6 +47,10 @@ func main() {
 			email := c.String("email")
 			password := c.String("password")
 			company := c.String("company")
+			if len(name) == 0 || len(email) == 0 || len(password) == 0 {
+				log.Println("can't use nil parameter to create user")
+				os.Exit(0)
+			}
 
 			r, err := client.Create(context.TODO(), &pb.User{
 				Name:     name,

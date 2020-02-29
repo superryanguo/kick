@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -15,6 +16,7 @@ func CreateConnection() (*gorm.DB, error) {
 	user := os.Getenv("DB_USER")
 	DBName := os.Getenv("DB_NAME")
 	password := os.Getenv("DB_PASSWORD")
+	log.Println("connecting to the database...")
 
 	return gorm.Open(
 		"postgres",

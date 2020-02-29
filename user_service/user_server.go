@@ -15,6 +15,8 @@ func main() {
 
 	if err != nil {
 		log.Fatalf("Could not connect to DB: %v", err)
+	} else {
+		log.Println("connecting to the database is ok")
 	}
 
 	db.AutoMigrate(&pb.User{})
