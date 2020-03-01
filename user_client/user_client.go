@@ -50,8 +50,8 @@ func main() {
 			password := c.String("password")
 			company := c.String("company")
 			log.Printf("the parameter=%s,%s,%s,%s\n", name, email, password, company)
-			if len(name) == 0 || len(password) == 0 {
-				log.Println("can't use empty name and password to create user")
+			if len(name) == 0 || len(email) == 0 || len(password) == 0 {
+				log.Println("can't use empty name, mail or password to create user")
 				os.Exit(0)
 			}
 
@@ -74,7 +74,18 @@ func main() {
 				log.Println(v)
 			}
 
-			// let's just exit because
+			log.Println("Auth... user:", email)
+			authResponse, err := client.Auth(context.TODO(), &pb.User{
+				Email:    email,
+				Password: password,
+			})
+
+			if err != nil {
+				log.Fatalf("Could not authenticate user: %s error: %v\n", email, err)
+			}
+
+			log.Printf("AuthPass, Your access token is: %s \n", authResponse.Token)
+
 			os.Exit(0)
 		}),
 	)

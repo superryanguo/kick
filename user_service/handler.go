@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"log"
 
 	pb "github.com/superryanguo/kick/user_service/proto"
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 )
 
@@ -35,15 +37,34 @@ func (srv *service) GetAll(ctx context.Context, req *pb.Request, res *pb.Respons
 }
 
 func (srv *service) Auth(ctx context.Context, req *pb.User, res *pb.Token) error {
-	_, err := srv.repo.GetByEmailAndPassword(req)
+	log.Println("Auth user:", req.Email, req.Password)
+	user, err := srv.repo.GetByEmail(req.Email)
+	log.Printf("Auth find user %v\n", user)
 	if err != nil {
 		return err
 	}
-	res.Token = "testingabc"
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		return err
+	}
+	log.Println("Auth pass")
+
+	token, err := srv.tokenService.Encode(user)
+	if err != nil {
+		return err
+	}
+	res.Token = token
 	return nil
+
 }
 
 func (srv *service) Create(ctx context.Context, req *pb.User, res *pb.Response) error {
+	hp, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	req.Password = string(hp)
+
 	if err := srv.repo.Create(req); err != nil {
 		res.Done = false
 		return err
@@ -55,5 +76,19 @@ func (srv *service) Create(ctx context.Context, req *pb.User, res *pb.Response) 
 }
 
 func (srv *service) ValidateToken(ctx context.Context, req *pb.Token, res *pb.Token) error {
+
+	claims, err := srv.tokenService.Decode(req.Token)
+	if err != nil {
+		return err
+	}
+
+	log.Println("cliams:", claims)
+
+	if claims.User.Id == "" { //TODO: need to enhance?
+		return errors.New("invalid user")
+	}
+
+	res.Valid = true
+
 	return nil
 }
