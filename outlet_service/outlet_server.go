@@ -1,12 +1,18 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"log"
 	"os"
 
 	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/metadata"
+	"github.com/micro/go-micro/server"
 	cor "github.com/superryanguo/kick/courier_service/proto"
 	pb "github.com/superryanguo/kick/outlet_service/proto"
+	userService "github.com/superryanguo/kick/user_service/proto"
 )
 
 const (
@@ -41,6 +47,7 @@ func main() {
 	srv := micro.NewService(
 		micro.Name("outlet"),
 		micro.Version("latest"),
+		micro.WrapHandler(AuthWrapper),
 	)
 
 	c := cor.NewCourierServiceClient("courier", srv.Client())
@@ -50,5 +57,39 @@ func main() {
 
 	if err := srv.Run(); err != nil {
 		log.Fatalf("failed to serve: %v", err)
+	}
+}
+
+func AuthWrapper(fn server.HandlerFunc) server.HandlerFunc {
+	return func(ctx context.Context, req server.Request, resp interface{}) error {
+		//skip it when DISABLE_AUTH is set
+		if os.Getenv("DISABLE_AUTH") == "true" {
+			log.Println("skipping the auth by ENV set")
+			return fn(ctx, req, resp)
+		}
+		meta, ok := metadata.FromContext(ctx)
+		if !ok {
+			return errors.New("no auth meta-data found in request")
+		}
+		token := meta["Token"] //why upcase?!
+		if len(token) == 0 {
+			log.Println("The Token is empty, return")
+			return errors.New("empty token")
+		} else {
+			log.Println("AuthWrapper Authenticating with token: ", token)
+		}
+
+		authClient := userService.NewUserServiceClient("user", client.DefaultClient)
+		authResp, err := authClient.ValidateToken(ctx, &userService.Token{
+			Token: token,
+		})
+		log.Println("Auth resp:", authResp)
+		log.Println("Err:", err)
+		if err != nil {
+			return err
+		}
+
+		err = fn(ctx, req, resp)
+		return err
 	}
 }

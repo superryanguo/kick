@@ -7,6 +7,7 @@ import (
 	"os"
 
 	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro/metadata"
 	pb "github.com/superryanguo/kick/outlet_service/proto"
 	"golang.org/x/net/context"
 )
@@ -34,14 +35,16 @@ func main() {
 	//defer conn.Close()
 	//client := pb.NewOutletServiceClient(conn)
 
-	service := micro.NewService(micro.Name("outlet"))
+	service := micro.NewService(micro.Name("outlet-cli"))
 	service.Init()
 
 	client := pb.NewOutletServiceClient("outlet", service.Client())
 
 	file := defaultFilename
+	var token string
 	if len(os.Args) > 1 {
 		file = os.Args[1]
+		token = os.Args[2]
 	}
 
 	order, err := parseFile(file)
@@ -50,14 +53,18 @@ func main() {
 		log.Fatalf("Could not parse file: %v", err)
 	}
 
+	ctx := metadata.NewContext(context.Background(), map[string]string{
+		"token": token,
+	})
+
 	log.Printf("######let's call CreateOrder\n")
-	_, err = client.CreateOrder(context.Background(), order)
+	_, err = client.CreateOrder(ctx, order)
 	if err != nil {
 		log.Fatalf("Could not greet: %v", err)
 	}
 
 	log.Printf("######let's call GetOrders\n")
-	getAll, err := client.GetOrders(context.Background(), &pb.GetRequest{})
+	getAll, err := client.GetOrders(ctx, &pb.GetRequest{})
 	if err != nil {
 		log.Fatalf("Could not list orders: %v", err)
 	}
