@@ -8,6 +8,7 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/micro/cli v0.2.0
 	github.com/micro/go-micro v1.18.0
+	github.com/micro/go-plugins/broker/nats v0.0.0-20200119172437-4fe21aa238fd
 	github.com/satori/go.uuid v1.2.0
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2

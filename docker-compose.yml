@@ -25,6 +25,13 @@ services:
     ports:
       - 5432
 
+  msgbroker:
+    image: nats
+    networks:
+      - outlet-backend-net
+    ports:
+      - 4222
+
   courier-server:
     restart: always
     container_name: "courier-server"
@@ -64,8 +71,10 @@ services:
     build: ./user_service
     links:
       - database
+      - msgbroker
     depends_on:
       - database
+      - msgbroker
     networks:
       - outlet-backend-net
       - outlet-net
@@ -75,15 +84,22 @@ services:
       DB_PORT: "5432"
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
+      MICRO_BROKER: "nats"
+      MICRO_BROKER_ADDRESS: "msgbroker:4222"
 
   email-server:
     restart: always
     container_name: "email-server"
     build: ./email_service
+    links:
+      - msgbroker
+    depends_on:
+      - msgbroker
     networks:
       - outlet-backend-net
-    #environment:
-      #DB_NAME: "postgres"
+    environment:
+      MICRO_BROKER: "nats"
+      MICRO_BROKER_ADDRESS: "msgbroker:4222"
 
   outlet-client:
     container_name: "outlet-client"
