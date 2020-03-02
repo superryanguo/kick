@@ -7,6 +7,7 @@ courier_service/courier_server
 user_service/user_service
 user_service/user_server
 user_client/user_client
+email_service/email_service
 data
 *.exe
 *.exe~

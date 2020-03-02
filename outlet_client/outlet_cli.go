@@ -60,7 +60,7 @@ func main() {
 	log.Printf("######let's call CreateOrder\n")
 	_, err = client.CreateOrder(ctx, order)
 	if err != nil {
-		log.Fatalf("Could not greet: %v", err)
+		log.Fatalf("Could not CreateOrder: %v", err)
 	}
 
 	log.Printf("######let's call GetOrders\n")

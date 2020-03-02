@@ -76,6 +76,15 @@ services:
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
 
+  email-server:
+    restart: always
+    container_name: "email-server"
+    build: ./email_service
+    networks:
+      - outlet-backend-net
+    #environment:
+      #DB_NAME: "postgres"
+
   outlet-client:
     container_name: "outlet-client"
     build: ./outlet_client
