@@ -117,6 +117,20 @@ services:
     networks:
       - outlet-backend-net
 
+  micro-client:
+    container_name: "micro-client"
+    image: microhq/micro
+    networks:
+      - outlet-backend-net
+      - outlet-net
+    ports:
+        - 8080:8080
+        - 8082:8082
+    environment:
+      MICRO_REGISTRY: "mdns"
+    command: web
+    #command: api --handler=rpc --address=:8080 --namespace=user
+
 networks:
   outlet-net:
     name: outlet-net
